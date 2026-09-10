@@ -32,10 +32,8 @@ def render_status_card(scenario: str):
         },
     }
 
-    # デフォルトは「通常」に設定
     config = status_config.get(scenario, status_config["通常"])
 
-    # HTML/CSSでカード風UIを描画
     card_html = f"""
     <div style="
         background-color: {config['bg_color']};
