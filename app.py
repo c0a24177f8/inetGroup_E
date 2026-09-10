@@ -1,4 +1,5 @@
 import streamlit as st
+from status import render_status_card
 
 st.set_page_config(page_title="ホットメーター", layout="centered")
 
@@ -9,7 +10,7 @@ with st.sidebar:
 st.title("ホットメーター")
 st.caption("最終更新 2026/09/10 09:32")
 
-st.info("ここにステータス帯")
+render_status_card(scenario)
 
 tab1, tab2, tab3 = st.tabs(["24時間", "7日間", "30日間"])
 with tab1:
