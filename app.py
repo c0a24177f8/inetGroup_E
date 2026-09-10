@@ -7,7 +7,6 @@ st.set_page_config(page_title="ほっとメーター", layout="centered")
 
 with st.sidebar:
     st.subheader("ほっとメーター")
-    st.selectbox("見守る家族", ["お母さん"])
     scenario = st.radio("表示シナリオ", ["通常", "やや注意", "異常"])
 
 d = data.get(scenario)
