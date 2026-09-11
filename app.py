@@ -11,11 +11,6 @@ from weather import get_current_temperature, render_heatstroke_card
 
 st.set_page_config(page_title="ホットメーター", layout="centered")
 
-@st.dialog("警察に発信中")
-def calling_police():
-    st.write("スマホだった場合実際にここで発信される")
-    st.link_button("タップして接続", "tel:110",use_container_width=True)
-
 def get_image_base64(path):
     with open(path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
@@ -127,16 +122,16 @@ if scenario == "熱中症リスク(夏場)":
 else:
     render_status_card(scenario)
 
-# 2. タブとグラフの表示
+# 2. ボタンの表示
+render_contact_button(d["status"]) 
+
+# 3. タブとグラフの表示
 tabs = st.tabs(["24時間"])
 with tabs[0]: 
     chart.render_chart(d)
 
 # 3. 直近の利用時間の表示
 render_recent_usage(d["last_electricity"], d["last_gas"])
-
-if st.button("今すぐ連絡する", use_container_width=True):
-    calling_police()
 
 st.markdown("""
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -183,5 +178,3 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
-# 4. ボタンの表示
-render_contact_button(d["status"]) 
