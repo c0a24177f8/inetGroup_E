@@ -6,6 +6,7 @@ import chart
 import status
 import base64
 import data
+from weather import get_current_temperature, render_heatstroke_card 
 
 
 st.set_page_config(page_title="ホットメーター", layout="centered")
@@ -21,6 +22,7 @@ st.markdown("""
     max-width: 420px;
     padding-top: 4rem;
     padding-bottom: 90px;
+    position: relative;
 }
 
 .app-header {
@@ -51,10 +53,9 @@ st.markdown("""
 .bottom-nav {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: auto; 
     width: 100%;
-    max-width: 420px;
+    max-width: 400px; 
     background-color: #ffffff;
     border-top: 1px solid #e2e8f0;
     padding: 8px 0;
@@ -95,7 +96,13 @@ st.markdown("""
 
 with st.sidebar:
     st.subheader("ホットメーター")
-    scenario = st.radio("表示シナリオ", ["通常", "異常"])
+    scenario = st.radio("表示シナリオ", ["通常", "やや注意","異常","熱中症リスク(夏場)"])
+    if scenario == "熱中症リスク(夏場)":
+        current_temp = 35.2  # 猛暑日を想定したデモ用の固定数値
+        st.metric(label="現在の東京の気温 (真夏日想定)", value=f"{current_temp} ℃")
+    else:
+        current_temp = get_current_temperature() # 通常時はAPIのリアルタイム数値
+        st.metric(label="現在の東京の気温", value=f"{current_temp} ℃")
 
 d = data.get(scenario)
 
@@ -110,7 +117,10 @@ st.markdown(f"""
 
 
 # 1. ステータスカードの表示
-render_status_card(d["status"]) 
+if scenario == "熱中症リスク(夏場)":
+    render_heatstroke_card(current_temp)
+else:
+    render_status_card(scenario)
 
 # 2. ボタンの表示
 render_contact_button(d["status"]) 
@@ -120,11 +130,8 @@ tabs = st.tabs(["24時間"])
 with tabs[0]: 
     chart.render_chart(d)
 
-# 4. 直近の利用時間の表示
-render_recent_usage(
-    d["electricity"][-1], d["gas"][-1],
-    sum(d["electricity"]) == 0, sum(d["gas"]) == 0,
-)
+# 3. 直近の利用時間の表示
+render_recent_usage(d["last_electricity"], d["last_gas"])
 
 st.markdown("""
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
