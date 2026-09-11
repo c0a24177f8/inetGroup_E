@@ -1,23 +1,36 @@
 import streamlit as st
-from status import render_status_card
+import data
+import chart
+import status
 
-st.set_page_config(page_title="ホットメーター", layout="centered")
+st.set_page_config(page_title="ほっとメーター", layout="centered")
+
+st.markdown("""
+<style>
+[data-testid="stMainBlockContainer"] {
+    max-width: 420px;
+    padding-top: 2rem;
+}
+</style>
+""", unsafe_allow_html=True)
 
 with st.sidebar:
-    st.subheader("ホットメーター")
-    scenario = st.radio("表示シナリオ", ["通常", "やや注意", "異常"])
+    st.subheader("ほっとメーター")
+    scenario = st.radio("表示シナリオ", ["通常", "異常"])
 
-st.title("ホットメーター")
-st.caption("最終更新 2026/09/10 09:32")
+d = data.get(scenario)
 
-render_status_card(scenario)
+st.title("ほっとメーター")
 
-tab1, tab2, tab3 = st.tabs(["24時間", "7日間", "30日間"])
-with tab1:
-    st.write("ここにグラフ")
+status.render_status_card(d["status"])
 
+st.subheader("24時間の生活リズム")
+st.plotly_chart(chart.build(d), use_container_width=True)
+
+col1, col2 = st.columns(2)
+col1.metric("電気 最終利用", d["last_electricity"])
+col2.metric("ガス 最終利用", d["last_gas"])
+if d["note"]:
+    st.warning(d["note"])
 
 st.link_button("今すぐ連絡する", "tel:09000000000", use_container_width=True)
-
-with st.expander("お知らせ履歴"):
-    st.write("準備中")
