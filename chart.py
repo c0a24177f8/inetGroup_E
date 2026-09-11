@@ -1,12 +1,12 @@
 import streamlit as st
 import plotly.graph_objects as go
 
-def render_chart(df):
+def render_chart(d):
     fig = go.Figure()
     
     # 電気のグラフ（黄色の線）
     fig.add_trace(go.Scatter(
-        x=df['Time'], y=df['Electricity_kWh'],
+        x=d["hours"], y=d["electricity"],
         mode='lines', name='電気 (kWh)', 
         line=dict(color='#ecc94b', width=3),
         fill='tozeroy', fillcolor='rgba(236, 201, 75, 0.1)' # 下を少し塗りつぶす
@@ -14,7 +14,7 @@ def render_chart(df):
     
     # ガスのグラフ（青色の線）
     fig.add_trace(go.Scatter(
-        x=df['Time'], y=df['Gas_m3'],
+        x=d["hours"], y=d["gas"],
         mode='lines', name='ガス (m³)', 
         line=dict(color='#4299e1', width=3),
         fill='tozeroy', fillcolor='rgba(66, 153, 225, 0.1)',

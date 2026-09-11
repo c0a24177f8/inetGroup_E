@@ -48,7 +48,7 @@ def _max_streak(values, used):
 
 def _judge(hours, electricity, gas):
     #通常か異常か判定
-    if _max_streak(electrcity, lambda v: v == 0) >= NO_POWER_HOURS:
+    if _max_streak(electricity, lambda v: v == 0) >= NO_POWER_HOURS:
         return "異常"
     by_hour = {int(t.split(":")[0]): g for t, g in zip(hours, gas)}
     night = [by_hour.get(h, 0) for h in NIGHT_HOURS]
