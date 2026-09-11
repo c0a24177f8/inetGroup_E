@@ -123,10 +123,7 @@ with tabs[0]:
     chart.render_chart(d)
 
 # 3. 直近の利用時間の表示
-render_recent_usage(
-    d["electricity"][-1], d["gas"][-1],
-    sum(d["electricity"]) == 0, sum(d["gas"]) == 0,
-)
+render_recent_usage(d["last_electricity"], d["last_gas"])
 
 if st.button("今すぐ連絡する", use_container_width=True):
     calling_police()

@@ -19,22 +19,14 @@ BASELINE_FILE = "normal_data.csv"
 META = {
     "通常": {
         "file": "normal_data.csv",
-        "status": "通常", 
-        "last_electricity": "09:12",
-        "last_gas": "08:47",
         "note": None,
     },
     "やや注意": {
         "file": "caution_data.csv",
-        "last_electricity": "09:12",
-        "last_gas": "18:00",
         "note": "ガスの利用がいつもより少なめです",
     },
     "異常": {
         "file": "abnormal_data.csv",
-        "status": "異常", 
-        "last_electricity": "前日 19:32",
-        "last_gas": "23:00",
         "note": None,
     },
 }
@@ -67,6 +59,13 @@ def _baseline_gas_total():
     """平常時の1日あたりガス総使用量"""
     _, _, gas = _read(BASELINE_FILE)
     return sum(gas)
+
+def _last_used(hours, values):
+    """最後に使用量が0より大きかった時刻と値を返す。一度も使っていなければ None"""
+    for t, v in zip(reversed(hours), reversed(values)):
+        if v > 0:
+            return {"time": t, "value": v}
+    return None
 
 def _judge(hours, electricity, gas):
     """通常 / やや注意 / 異常 を判定する。異常を先に見る"""
@@ -101,8 +100,8 @@ def get(scenario):
         "hours": hours,
         "electricity": electricity,
         "gas": gas,
-        "last_electricity": meta["last_electricity"],
-        "last_gas": meta["last_gas"],
+        "last_electricity": _last_used(hours, electricity),
+        "last_gas": _last_used(hours, gas),
         "note": meta["note"],
         "status": _judge(hours, electricity, gas), 
     }
@@ -118,4 +117,5 @@ if __name__ == "__main__":
             f"ガス計 {sum(d['gas']):.1f} m3  "
             f"電気計 {sum(d['electricity']):.1f} kWh  "
             f"件数 {len(d['electricity'])}"
+            f"最終利用 電気: {d['last_electricity']}  ガス: {d['last_gas']}"
         )
