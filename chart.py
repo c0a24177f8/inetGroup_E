@@ -26,5 +26,6 @@ def build(d):
                    tickvals=["0:00", "6:00", "12:00", "18:00", "23:00"]),
         legend=dict(orientation="h", y=1.12, x=0),
         plot_bgcolor="white",
+        bargap=0.3,
     )
     return fig
