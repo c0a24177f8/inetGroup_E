@@ -24,6 +24,7 @@ def render_chart(d):
     # グラフの見た目の調整
     fig.update_layout(
         margin=dict(l=0, r=0, t=10, b=0),
+        height=300,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         yaxis=dict(title='電気 (kWh)', range=[0, 1.5], showgrid=True, gridcolor='#f0f0f0'),
         yaxis2=dict(title='ガス (m³)', range=[0, 0.6], overlaying='y', side='right', showgrid=False),
