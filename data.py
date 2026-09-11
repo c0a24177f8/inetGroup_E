@@ -4,10 +4,17 @@ from pathlib import Path
 CSV_DIR = Path(__file__).parent / "data"
 
 # 判定
-NO_POWER_HOURS = 24
-NIGHT_HOURS = [23, 0, 1, 2, 3, 4]
-NIGHT_GAS_HOURS = 3
+# 異常
+NO_POWER_HOURS_ALERT = 24       # 電気ゼロが24時間連続
+NIGHT_GAS_HOURS_ALERT = 3       # 深夜ガスが3時間連続
+ 
+# やや注意
+NO_POWER_HOURS_WARN = 12        # 電気ゼロが12時間連続
+NIGHT_GAS_HOURS_WARN = 2        # 深夜ガスが2時間連続
+GAS_LOW_RATIO = 0.5             # ガス総使用量が平常時の50%未満
 
+NIGHT_HOURS = [23, 0, 1, 2, 3, 4]
+BASELINE_FILE = "normal_data.csv"
 
 META = {
     "通常": {
@@ -16,6 +23,12 @@ META = {
         "last_electricity": "09:12",
         "last_gas": "08:47",
         "note": None,
+    },
+    "やや注意": {
+        "file": "caution_data.csv",
+        "last_electricity": "09:12",
+        "last_gas": "18:00",
+        "note": "ガスの利用がいつもより少なめです",
     },
     "異常": {
         "file": "abnormal_data.csv",
@@ -45,16 +58,37 @@ def _max_streak(values, used):
         best = max(best, current)
     return best
 
+def _night_gas(hours, gas):
+    """深夜帯のガス使用量を、時刻順（23時→4時）に並べて返す"""
+    by_hour = {int(t.split(":")[0]): g for t, g in zip(hours, gas)}
+    return [by_hour.get(h, 0) for h in NIGHT_HOURS]
+
+def _baseline_gas_total():
+    """平常時の1日あたりガス総使用量"""
+    _, _, gas = _read(BASELINE_FILE)
+    return sum(gas)
 
 def _judge(hours, electricity, gas):
-    #通常か異常か判定
-    if _max_streak(electricity, lambda v: v == 0) >= NO_POWER_HOURS:
+    """通常 / やや注意 / 異常 を判定する。異常を先に見る"""
+    no_power = _max_streak(electricity, lambda v: v == 0)
+    night = _max_streak(_night_gas(hours, gas), lambda v: v > 0)
+ 
+    # --- 異常 ---
+    if no_power >= NO_POWER_HOURS_ALERT:
         return "異常"
-    by_hour = {int(t.split(":")[0]): g for t, g in zip(hours, gas)}
-    night = [by_hour.get(h, 0) for h in NIGHT_HOURS]
-    if _max_streak(night, lambda v: v > 0) >= NIGHT_GAS_HOURS:
+    if night >= NIGHT_GAS_HOURS_ALERT:
         return "異常"
-    
+ 
+    # --- やや注意 ---
+    if no_power >= NO_POWER_HOURS_WARN:
+        return "やや注意"
+    if night >= NIGHT_GAS_HOURS_WARN:
+        return "やや注意"
+ 
+    baseline = _baseline_gas_total()
+    if baseline > 0 and sum(gas) < baseline * GAS_LOW_RATIO:
+        return "やや注意"
+ 
     return "通常"
 
 
@@ -75,6 +109,13 @@ def get(scenario):
 
 
 if __name__ == "__main__":
+    base = _baseline_gas_total()
+    print(f"ベースライン(ガス総使用量): {base:.1f} m3  / 注意の境界: {base * GAS_LOW_RATIO:.2f} m3\n")
     for name in META:
         d = get(name)
-        print(name, "->", d["status"], "件数:", len(d["electricity"]))
+        print(
+            f"{name:5s} -> {d['status']:5s} "
+            f"ガス計 {sum(d['gas']):.1f} m3  "
+            f"電気計 {sum(d['electricity']):.1f} kWh  "
+            f"件数 {len(d['electricity'])}"
+        )

@@ -100,7 +100,7 @@ st.markdown("""
 
 with st.sidebar:
     st.subheader("ホットメーター")
-    scenario = st.radio("表示シナリオ", ["通常", "異常"])
+    scenario = st.radio("表示シナリオ", ["通常", "やや注意", "異常"])
 
 d = data.get(scenario)
 
