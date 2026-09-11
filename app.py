@@ -6,6 +6,7 @@ import chart
 import status
 import base64
 import data
+from weather import get_current_temperature, render_heatstroke_card 
 
 
 st.set_page_config(page_title="ホットメーター", layout="centered")
@@ -100,7 +101,13 @@ st.markdown("""
 
 with st.sidebar:
     st.subheader("ホットメーター")
-    scenario = st.radio("表示シナリオ", ["通常", "やや注意", "異常"])
+    scenario = st.radio("表示シナリオ", ["通常", "やや注意","異常","熱中症リスク(夏場)"])
+    if scenario == "熱中症リスク(夏場)":
+        current_temp = 35.2  # 猛暑日を想定したデモ用の固定数値
+        st.metric(label="現在の東京の気温 (真夏日想定)", value=f"{current_temp} ℃")
+    else:
+        current_temp = get_current_temperature() # 通常時はAPIのリアルタイム数値
+        st.metric(label="現在の東京の気温", value=f"{current_temp} ℃")
 
 d = data.get(scenario)
 
@@ -115,7 +122,10 @@ st.markdown(f"""
 
 
 # 1. ステータスカードの表示
-render_status_card(d["status"]) 
+if scenario == "熱中症リスク(夏場)":
+    render_heatstroke_card(current_temp)
+else:
+    render_status_card(scenario)
 
 # 2. タブとグラフの表示
 tabs = st.tabs(["24時間"])
