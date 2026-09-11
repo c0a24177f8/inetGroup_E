@@ -19,7 +19,7 @@ st.markdown("""
 <style>
 [data-testid="stMainBlockContainer"] {
     max-width: 420px;
-    padding-top: 3rem;
+    padding-top: 4rem;
     padding-bottom: 90px;
 }
 
@@ -27,6 +27,7 @@ st.markdown("""
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 1rem;
     padding-bottom: 12px;
     margin-bottom: 16px;
 }
