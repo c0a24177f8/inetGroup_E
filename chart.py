@@ -1,31 +1,34 @@
+import streamlit as st
 import plotly.graph_objects as go
 
-def build(d):
-    x = d["hours"]
+def render_chart(df):
     fig = go.Figure()
-
-    #ガス
-    fig.add_trace(go.Bar(
-        x=x, y=d["gas"], name="ガス (m³)",
-        marker_color="#7EB6E8", yaxis="y2", opacity=0.85,
-    ))
-
-    #電気
+    
+    # 電気のグラフ（黄色の線）
     fig.add_trace(go.Scatter(
-        x=x, y=d["electricity"], name="電気 (kWh)",
-        line=dict(color="#F0A22E", width=2.5),
+        x=df['Time'], y=df['Electricity_kWh'],
+        mode='lines', name='電気 (kWh)', 
+        line=dict(color='#ecc94b', width=3),
+        fill='tozeroy', fillcolor='rgba(236, 201, 75, 0.1)' # 下を少し塗りつぶす
     ))
-
+    
+    # ガスのグラフ（青色の線）
+    fig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Gas_m3'],
+        mode='lines', name='ガス (m³)', 
+        line=dict(color='#4299e1', width=3),
+        fill='tozeroy', fillcolor='rgba(66, 153, 225, 0.1)',
+        yaxis='y2' # 右側のメモリを使う設定
+    ))
+    
+    # グラフの見た目の調整
     fig.update_layout(
-        height=320,
-        margin=dict(l=10, r=10, t=10, b=10),
-        yaxis=dict(title="電気 (kWh)", range=[0, 2.0]),
-        yaxis2=dict(title="ガス (m³)", overlaying="y", side="right",
-                    range=[0, 0.8], showgrid=False),
-        xaxis=dict(tickmode="array",
-                   tickvals=["0:00", "6:00", "12:00", "18:00", "23:00"]),
-        legend=dict(orientation="h", y=1.12, x=0),
-        plot_bgcolor="white",
-        bargap=0.3,
+        margin=dict(l=0, r=0, t=10, b=0),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        yaxis=dict(title='電気 (kWh)', range=[0, 1.5], showgrid=True, gridcolor='#f0f0f0'),
+        yaxis2=dict(title='ガス (m³)', range=[0, 0.6], overlaying='y', side='right', showgrid=False),
+        plot_bgcolor='white'
     )
-    return fig
+    
+    # Streamlitに描画
+    st.plotly_chart(fig, use_container_width=True)
