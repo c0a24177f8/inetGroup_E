@@ -21,6 +21,7 @@ st.markdown("""
     max-width: 420px;
     padding-top: 4rem;
     padding-bottom: 90px;
+    position: relative;
 }
 
 .app-header {
@@ -51,10 +52,9 @@ st.markdown("""
 .bottom-nav {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    left: auto; 
     width: 100%;
-    max-width: 420px;
+    max-width: 400px; 
     background-color: #ffffff;
     border-top: 1px solid #e2e8f0;
     padding: 8px 0;
