@@ -29,6 +29,13 @@ META = {
         "file": "abnormal_data.csv",
         "note": None,
     },
+    "熱中症リスク(夏場)": {
+        "file": "abnormal_data.csv",
+        "status": "異常", 
+        "last_electricity": "前日 19:32",
+        "last_gas": "23:00",
+        "note": None,
+    },
 }
 
 
