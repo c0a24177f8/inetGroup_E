@@ -17,13 +17,27 @@ META = {
         "last_gas": "08:47",
         "note": None,
     },
+    "やや注意": {
+        "file": "abnormal_data.csv",
+        "status": "やや注意", 
+        "last_electricity": "前日 19:32",
+        "last_gas": "23:00",
+        "note": None,
+    },
     "異常": {
         "file": "abnormal_data.csv",
         "status": "異常", 
         "last_electricity": "前日 19:32",
         "last_gas": "23:00",
         "note": None,
-    },
+        },
+    "熱中症リスク(夏場)": {
+        "file": "abnormal_data.csv",
+        "status": "異常", 
+        "last_electricity": "前日 19:32",
+        "last_gas": "23:00",
+        "note": None,
+        },
 }
 
 
