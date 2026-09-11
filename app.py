@@ -10,6 +10,11 @@ import data
 
 st.set_page_config(page_title="ホットメーター", layout="centered")
 
+@st.dialog("警察に発信中")
+def calling_police():
+    st.write("スマホだった場合実際にここで発信される")
+    st.link_button("タップして接続", "tel:110",use_container_width=True)
+
 def get_image_base64(path):
     with open(path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
@@ -123,7 +128,8 @@ render_recent_usage(
     sum(d["electricity"]) == 0, sum(d["gas"]) == 0,
 )
 
-st.link_button("今すぐ連絡する", "tel:09000000000", use_container_width=True)
+if st.button("今すぐ連絡する", use_container_width=True):
+    calling_police()
 
 st.markdown("""
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
